@@ -52,7 +52,7 @@ def process(input_file):
         # Cashback info if present
         cashback = row.get("Сума кешбеку")
         if pd.notna(cashback) and float(cashback) != 0:
-            details += f" [Кешбек {float(cashback):.2f}]"
+            details += f" [cashback {float(cashback):.2f}]"
 
         # Sum logic
         sum_value = float(row["Сума у валюті рахунку"])
