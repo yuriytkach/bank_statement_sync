@@ -43,7 +43,7 @@ def process(input_file):
 
         # Currency conversion info if Валюта exists
         curr = row.get("Валюта")
-        if pd.notna(curr) and str(curr).strip():
+        if pd.notna(curr) and str(curr).strip() != "UAH":
             sum_oper = float(row["Сума у валюті операції"])
             sum_acc = float(row["Сума у валюті рахунку"])
             rate = sum_acc / sum_oper if sum_oper != 0 else 0
