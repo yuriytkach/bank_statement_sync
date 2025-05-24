@@ -48,12 +48,14 @@ jobs:
       # It only runs for pull_request events
       if: github.event_name == 'pull_request' && always()
       uses: actions/github-script@v6
+      env:
+        PR_NUMBER: ${{ github.event.number }}
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          const prNumber = github.event.pull_request ? github.event.pull_request.number : null;
+          const prNumber = process.env.PR_NUMBER;
           if (!prNumber) {
-            console.log('Could not get PR number (github.event.pull_request.number was not found), skipping comment.');
+            console.log('Could not get PR number from environment variable (PR_NUMBER), skipping comment.');
             return;
           }
 
