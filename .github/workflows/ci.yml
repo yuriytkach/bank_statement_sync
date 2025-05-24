@@ -51,7 +51,7 @@ jobs:
       with:
         github-token: ${{secrets.GITHUB_TOKEN}}
         script: |
-          const prNumber = github.context.issue.number;
+          const prNumber = github.event.number || github.event.pull_request.number;
           if (!prNumber) {
             console.log('Could not get PR number, skipping comment.');
             return;
