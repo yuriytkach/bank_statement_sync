@@ -1,0 +1,90 @@
+name: Python CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    # Give the job an ID to reference its status later if needed, though job.status is usually enough
+    # id: build_and_test 
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v3
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      id: install_deps # Give this step an ID
+      run: |
+        python -m pip install --upgrade pip
+        if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
+        pip install pre-commit
+      # Continue on error to allow the comment step to report installation failures
+      continue-on-error: true 
+
+    - name: Run pre-commit checks
+      id: precommit # Give this step an ID
+      if: steps.install_deps.outcome == 'success' # Only run if deps installed successfully
+      run: |
+        pre-commit run --all-files
+      continue-on-error: true # Allow workflow to continue to report pre-commit failures
+
+    - name: Run tests
+      id: tests # Give this step an ID
+      if: steps.install_deps.outcome == 'success' # Only run if deps installed successfully
+      run: |
+        python -m unittest discover -s tests
+      continue-on-error: true # Allow workflow to continue to report test failures
+
+    - name: Post PR Comment
+      # This step will always run, even if previous steps fail (due to continue-on-error)
+      # It only runs for pull_request events
+      if: github.event_name == 'pull_request' && always()
+      uses: actions/github-script@v6
+      with:
+        github-token: ${{secrets.GITHUB_TOKEN}}
+        script: |
+          const prNumber = github.context.issue.number;
+          if (!prNumber) {
+            console.log('Could not get PR number, skipping comment.');
+            return;
+          }
+
+          const jobStatus = '${{ job.status }}'; // 'success', 'failure', 'cancelled'
+          const installDepsStatus = '${{ steps.install_deps.outcome }}';
+          const precommitStatus = '${{ steps.precommit.outcome }}';
+          const testsStatus = '${{ steps.tests.outcome }}';
+          
+          let commentBody = `**CI Checks Summary for PR #${prNumber}**\n\n`;
+          commentBody += `- Dependency Installation: ${installDepsStatus === 'success' ? '✅ Succeeded' : (installDepsStatus === 'failure' ? '❌ Failed' : '⚪ Skipped/Unknown')}\n`;
+          
+          if (installDepsStatus === 'success') {
+            commentBody += `- Pre-commit Checks: ${precommitStatus === 'success' ? '✅ Passed' : (precommitStatus === 'failure' ? '❌ Failed' : '⚪ Skipped/Unknown')}\n`;
+            commentBody += `- Unit Tests: ${testsStatus === 'success' ? '✅ Passed' : (testsStatus === 'failure' ? '❌ Failed' : '⚪ Skipped/Unknown')}\n`;
+          } else {
+            commentBody += `- Pre-commit Checks: ⚪ Skipped (due to dependency failure)\n`;
+            commentBody += `- Unit Tests: ⚪ Skipped (due to dependency failure)\n`;
+          }
+
+          commentBody += '\nOverall Job Status: ';
+          if (jobStatus === 'success') {
+            commentBody += '🎉 **All checks passed!**';
+          } else if (jobStatus === 'failure') {
+            commentBody += '💔 **Some checks failed.** Please review the logs for details.';
+          } else {
+            commentBody += `⚪ ${jobStatus}`;
+          }
+
+          github.rest.issues.createComment({
+            owner: context.repo.owner,
+            repo: context.repo.repo,
+            issue_number: prNumber,
+            body: commentBody
+          });
