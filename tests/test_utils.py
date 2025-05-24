@@ -1,5 +1,6 @@
 import pandas as pd
 
+
 def create_excel_file(filepath: str, sheet_name: str, data: list[list]):
     """
     Creates an Excel (XLSX) file at the given filepath with the given sheet_name and writes the data into it.

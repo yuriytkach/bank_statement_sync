@@ -4,6 +4,7 @@ import pandas as pd
 from structure_detector import detect_structure
 from tests.test_utils import create_excel_file
 
+
 class TestStructureDetector(unittest.TestCase):
     TEST_FILES_DIR = "test_files"
 
@@ -47,8 +48,9 @@ class TestStructureDetector(unittest.TestCase):
         # If pandas itself raises an error before structure_detector (e.g. trying to read [0,0]),
         # then that error (e.g. IndexError) would be caught.
         # Let's assume structure_detector is robust enough to attempt reading and then decides it's unknown or invalid.
-        with self.assertRaises(ValueError): # Or IndexError, or specific custom error
+        with self.assertRaises(ValueError):  # Or IndexError, or specific custom error
             detect_structure(filepath)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
