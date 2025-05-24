@@ -6,6 +6,8 @@ into a uniform CSV with three columns:
 - **Details** (operation description, category, time, exchange rate info, cashback)  
 - **Sum** (signed, two decimals)
 
+[![Python CI](https://github.com/yuriytkach/bank_statement_sync/actions/workflows/ci.yml/badge.svg)](https://github.com/yuriytkach/bank_statement_sync/actions/workflows/ci.yml)
+
 ---
 
 ## Prerequisites
