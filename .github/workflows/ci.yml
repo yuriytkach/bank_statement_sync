@@ -22,6 +22,14 @@ jobs:
       with:
         python-version: '3.13'
 
+    - name: Cache pip dependencies
+      uses: actions/cache@v4.2.3
+      with:
+        path: ~/.cache/pip # Path to pip's cache directory
+        key: ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-${{ hashFiles('**/requirements.txt') }}
+        restore-keys: |
+          ${{ runner.os }}-python-${{ steps.setup-python.outputs.python-version }}-
+
     - name: Install dependencies
       id: install_deps # Give this step an ID
       run: |
