@@ -9,6 +9,8 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    permissions:
+      pull-requests: write
     # Give the job an ID to reference its status later if needed, though job.status is usually enough
     # id: build_and_test 
 
