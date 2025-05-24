@@ -33,7 +33,7 @@ def process(input_file):
         if curr_card != curr_trans:
             sum_trans = float(row["Сума в валюті транзакції"])
             sum_card = float(row["Сума в валюті картки"])
-            rate = abs(sum_card) / sum_trans if sum_trans != 0 else 0
+            rate = abs(sum_card) / abs(sum_trans) if sum_trans != 0 else 0
             details += f" ({sum_trans:.2f} {curr_trans} @ {rate:.2f})"
 
         # Prepare Sum field (with sign, 2 decimals)

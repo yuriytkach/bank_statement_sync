@@ -9,7 +9,10 @@ def detect_structure(input_file):
     """
     # Read only the first cell of the first row
     df0 = pd.read_excel(input_file, header=None, nrows=1)
-    first_cell = df0.iloc[0, 0]
+    try:
+        first_cell = df0.iloc[0, 0]
+    except Exception as e:
+        raise ValueError(f"Error reading the file: {e}")
     if isinstance(first_cell, str):
         if "Виписка з Ваших карток за період" in first_cell:
             return "privat"

@@ -12,7 +12,9 @@ def create_excel_file(filepath: str, sheet_name: str, data: list[list]):
     """
     try:
         df = pd.DataFrame(data)
-        df.to_excel(filepath, sheet_name=sheet_name, index=False)
+        df.to_excel(
+            filepath, sheet_name=sheet_name, index=False, header=False
+        )  # Added header=False
         print(f"Excel file created successfully at {filepath}")
     except Exception as e:
         print(f"Error creating Excel file: {e}")
